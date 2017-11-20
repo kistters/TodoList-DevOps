@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  web:
+    build: .
+    command: ['python','todo-list.py']
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/code
