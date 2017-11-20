@@ -1,0 +1,47 @@
+<html>
+    <head>
+      <title>Welcome to Flask Todo List</title>
+    </head>
+    <header>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </header>
+    <body>
+        <div class="w3-container">
+        <a href="/">Flask Todo List</a>
+                
+        <form action="/task" method="post">
+            <p><input type="text" placeholder=" Task Content" name="content">
+            <input type="submit" class="w3-button w3-black"  value="Add"></p>
+        </form>
+        
+        <ul class="w3-ul w3-border box">
+            <li class="w3-khaki"><h4>TODO</h4></li>
+            {% for task in tasks %}
+                {% if not task.done %}
+                <li>
+                <a href="/done/{{ task.id }}"><i class="fa fa-close"></i></a>
+                {{ task.content }} 
+                <a class="delete" href="/delete/{{ task.id }}"><i class="fa fa-trash"></i></a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            <li class="w3-teal"><h4>DONE</h4></li>
+            {% for task in tasks %}
+                {% if task.done %}
+                <li>
+                    <a href="/done/{{ task.id }}"><i class="fa fa-check-circle"></i></a>
+                    <strike> {{ task.content }} </strike>
+                    <a class="delete" href="/delete/{{ task.id }}"> <i class="fa fa-trash"></i></a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    </body>
+  </html>
+
+
