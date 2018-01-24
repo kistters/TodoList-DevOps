@@ -1,12 +1,24 @@
 from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask_mailer import Mailer, Email
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todolist.db'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://flask:123@172.27.0.1/TODO_LIST'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-db = SQLAlchemy(app)
 
+app.config.update(
+    #EMAIL SETTINGS
+    MAILER_HOST='mailhog',
+    MAILER_PORT=1025,
+    MAILER_DEFAULT_SENDER='docker@docker.dev',
+    MAILER_USERNAME = '',
+    MAILER_PASSWORD = ''
+    )
+
+smtp = Mailer(app)
+db   = SQLAlchemy(app)
 
 class Task(db.Model):
     id      = db.Column(db.Integer, primary_key=True)
@@ -36,6 +48,15 @@ def add_task():
     task = Task(content)
     db.session.add(task)
     db.session.commit()
+    mail = Email(
+        subject= "Task %s" % (content),
+        text=content,
+        to=['maumau@docker.com', 'contato@docker.com'],
+        from_addr='anonymous@kws.com'
+    )
+
+    smtp.send(mail)
+
     return redirect('/')
 
 @app.route('/delete/<int:task_id>')
@@ -61,6 +82,10 @@ def resolve_task(task_id):
 
     db.session.commit()
     return redirect('/')
+
+@app.route('/docker')
+def docker():
+    return render_template('form.html')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

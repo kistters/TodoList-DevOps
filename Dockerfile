@@ -1,6 +1,7 @@
-FROM python:3.6
+FROM python:2.7
 
 ADD ./app /code
 
-RUN pip install -r \ 
-		requirements.txt
+WORKDIR /code
+
+RUN pip install -r requirements.txt
