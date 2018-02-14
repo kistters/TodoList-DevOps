@@ -1,40 +1,26 @@
 version: '2'
 
 services:
+  
+#Nginx
+  web:
+    image: nginx:1.13.8
+    depends_on:
+      - backend
+    ports:
+        - "80:80"
+        - "443:443"
+    volumes:
+        - ./nginx/conf.d:/etc/nginx/conf.d
+        - ./app:/code
+    depends_on:
+      - backend
+
 #Python
   backend:
     build: .
-    command: ['python','todo-list.py']
-    mem_limit: 512M
+    command: ["gunicorn", "--workers=8", "--bind=0.0.0.0:5000", "todo-list:app"]
     ports:
-      - "80:5000"
+      - "5000:5000"
     volumes:
       - ./app:/code
-    links:
-      - elasticsearch
-      - mongo
-
-#ElasticSeach
-  elasticsearch:
-    image: elasticsearch:latest
-    mem_limit: 3G
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-
-#Mongo
-  mongo:
-    image: mongo
-    mem_limit: 1G
-    ports:
-      - "27017:27017"
-    volumes:
-      - /data/db
-      - /data/configdb
-
-#MailHog idea de um amigo
-  mailhog:
-    image: mailhog/mailhog:latest
-    ports:
-      - "1025:1025"
-      - "8025:8025"
